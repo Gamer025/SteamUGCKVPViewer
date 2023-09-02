@@ -18,8 +18,9 @@ namespace SteamUGCKVPViewer
             viewer.GetAllIDs();
             stopWaitHandle.WaitOne();
             steamInited = false;
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             SteamAPI.Shutdown();
+            Console.ReadLine();
         }
 
         public SteamUGCKVPViewer()
@@ -42,6 +43,12 @@ namespace SteamUGCKVPViewer
         {
             subscribedItemIDs = new PublishedFileId_t[(int)SteamUGC.GetNumSubscribedItems()];
             SteamUGC.GetSubscribedItems(subscribedItemIDs, (uint)subscribedItemIDs.Length);
+            if (subscribedItemIDs.Length == 0)
+            {
+                Console.WriteLine("No subscribed mods found! Subscribe to mods you want to check the metadata of (and make sure steam_appid.txt has the correct steamapp id");
+                stopWaitHandle.Set();
+                return;
+            }
 
             query = SteamUGC.CreateQueryUGCDetailsRequest(subscribedItemIDs, (uint)subscribedItemIDs.Length);
             SteamUGC.SetReturnKeyValueTags(query, true);
